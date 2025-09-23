@@ -1,9 +1,13 @@
+![Cargo](https://icbotbz40ngrmv6r.public.blob.vercel-storage.com/cargo.png)
+
 # Cargo - Server Performance Testing Tool
 Cargo is load testing solution that helps businesses ensure their websites can handle high traffic conditions. Built with Go and Fiber framework, it simulates thousands of concurrent users to identify performance bottlenecks before they impact real customers.
 
 ## Features
 - **Dynamic Domain Configuration**: Easily update the target domain using a `.env` file.
-- **Randomized Requests**: Generate and send requests from a list of 1000 unique paths.
+- **Configurable Iterations**: Multiply your load tests with iteration parameters (e.g., 5 iterations = 495 total requests).
+- **API Integration**: RESTful API with CORS support for external integrations.
+- **Randomized Requests**: Generate and send requests from a list of unique paths.
 - **High Concurrency**: Utilizes Go's goroutines to simulate real-world load.
 - **Performance Insights**: Evaluate server RPS performance and identify bottlenecks.
 - **Extensible**: Easily modify for additional HTTP methods, headers, or payloads.
@@ -12,16 +16,31 @@ Cargo is load testing solution that helps businesses ensure their websites can h
 
 1. **Load Configuration**:
    - The domain is loaded dynamically from the `.env` file.
+   - Iterations can be configured via API or frontend (default: 1).
 
 2. **Path Generation**:
-   - A file (`urls.txt`) contains 1000 unique paths (e.g., `/news1.php`, `/api/endpoint`, etc.).
+   - A file (`urls.txt`) contains 99 unique paths (e.g., `/news1.php`, `/api/endpoint`, etc.).
    - Paths are read and randomized for each request.
 
 3. **Concurrency**:
    - Requests are sent concurrently using goroutines, simulating real-world high traffic scenarios.
+   - Total requests = 99 URLs × iterations (e.g., 5 iterations = 495 requests).
 
 4. **Performance Evaluation**:
    - Measures the time taken to complete all requests, helping determine the server's RPS handling capacity.
+
+## API Endpoints
+
+- `GET /` - Health check and status
+- `POST /api/start-test` - Start load test with configurable domain and iterations
+
+### API Request Example
+```json
+{
+  "domain": "https://example.com",
+  "iterations": 5
+}
+```
 
 ## Example `.env` File
 
