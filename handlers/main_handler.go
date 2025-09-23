@@ -38,6 +38,36 @@ func TestRPS(domain string, pathsFile string) {
 	fmt.Println("✅ RPS test completed successfully!")
 }
 
+// TestRPSWithIterations performs the RPS test with specified iterations
+func TestRPSWithIterations(domain string, pathsFile string, iterations int) {
+	paths := loadPaths(pathsFile)
+	if len(paths) == 0 {
+		log.Fatal("No paths found in the file")
+	}
+
+	client := &http.Client{
+		Timeout: 60 * time.Second,
+	}
+
+	totalRequests := len(paths) * iterations
+	fmt.Printf("Starting RPS test with %d iterations (%d total requests)\n", iterations, totalRequests)
+
+	var wg sync.WaitGroup
+	for i := 0; i < totalRequests; i++ {
+		randomPath := paths[rand.Intn(len(paths))]
+		fullURL := fmt.Sprintf("%s%s", domain, randomPath)
+
+		wg.Add(1)
+		go func(url string) {
+			defer wg.Done()
+			sendRequest(client, url)
+		}(fullURL)
+	}
+
+	wg.Wait()
+	fmt.Printf("✅ RPS test completed successfully! (%d requests processed)\n", totalRequests)
+}
+
 // sendRequest sends a single HTTP GET request and logs the response
 func sendRequest(client *http.Client, url string) {
 	fmt.Printf("Sending request to: %s\n", url)
