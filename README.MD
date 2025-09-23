@@ -1,7 +1,7 @@
 ![Cargo](https://icbotbz40ngrmv6r.public.blob.vercel-storage.com/cargo.png)
 
 # Cargo - Server Performance Testing Tool
-Cargo is load testing solution that helps businesses ensure their websites can handle high traffic conditions. Built with Go and Fiber framework, it simulates thousands of concurrent users to identify performance bottlenecks before they impact real customers.
+Cargo tests how well your website performs under heavy traffic, helping you find and fix problems before your customers experience them.
 
 ## Features
 - **Dynamic Domain Configuration**: Easily update the target domain using a `.env` file.
