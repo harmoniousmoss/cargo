@@ -1,5 +1,5 @@
-# Yugo - Server Performance Testing Tool
-Yugo is load testing solution that helps businesses ensure their websites can handle high traffic conditions. Built with Go and Fiber framework, it simulates thousands of concurrent users to identify performance bottlenecks before they impact real customers.
+# Cargo - Server Performance Testing Tool
+Cargo is load testing solution that helps businesses ensure their websites can handle high traffic conditions. Built with Go and Fiber framework, it simulates thousands of concurrent users to identify performance bottlenecks before they impact real customers.
 
 ## Features
 - **Dynamic Domain Configuration**: Easily update the target domain using a `.env` file.
@@ -40,18 +40,18 @@ DOMAIN=https://example.com
 ```
 
 # Terms and Conditions
-GoRPS is designed strictly for testing and evaluating the performance of servers that you own or have explicit permission to test. By using this tool, you agree to the following terms:
+Cargo is designed strictly for testing and evaluating the performance of servers that you own or have explicit permission to test. By using this tool, you agree to the following terms:
 
 ## Authorized Use Only:
-You must only use GoRPS on servers you own or have written consent to test. Unauthorized use on third-party servers is strictly prohibited.
+You must only use Cargo on servers you own or have written consent to test. Unauthorized use on third-party servers is strictly prohibited.
 
 ## No Malicious Intent:
-GoRPS must not be used for malicious activities such as Distributed Denial-of-Service (DDoS) attacks or any other actions intended to disrupt, harm, or degrade systems.
+Cargo must not be used for malicious activities such as Distributed Denial-of-Service (DDoS) attacks or any other actions intended to disrupt, harm, or degrade systems.
 
 ## Compliance with Laws:
 Users must comply with all applicable local, national, and international laws and regulations when using GoRPS.
 
 ## Liability Disclaimer:
-The developers of GoRPS are not responsible for any misuse, illegal activity, or damage caused by the tool. Use it at your own risk.
+The developers of Cargo are not responsible for any misuse, illegal activity, or damage caused by the tool. Use it at your own risk.
 
 By using this tool, you acknowledge and agree to these terms. Violations may lead to legal consequences.
