@@ -35,6 +35,7 @@ func TestRPS(domain string, pathsFile string) {
 	}
 
 	wg.Wait()
+	fmt.Println("✅ RPS test completed successfully!")
 }
 
 // sendRequest sends a single HTTP GET request and logs the response
