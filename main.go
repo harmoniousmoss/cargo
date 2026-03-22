@@ -34,6 +34,42 @@ func main() {
 		return c.SendString("Testing RPS tool is running!")
 	})
 
+	// Auth routes
+	app.Post("/api/login", func(c *fiber.Ctx) error {
+		type LoginRequest struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+
+		var req LoginRequest
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+		}
+
+		token, err := libs.Authenticate(req.Username, req.Password)
+		if err != nil {
+			return c.Status(401).JSON(fiber.Map{"error": "Invalid credentials"})
+		}
+
+		return c.JSON(fiber.Map{"token": token})
+	})
+
+	app.Post("/api/logout", func(c *fiber.Ctx) error {
+		token := c.Get("Authorization")
+		if token != "" {
+			libs.DeleteSession(token)
+		}
+		return c.JSON(fiber.Map{"message": "Logged out"})
+	})
+
+	app.Get("/api/validate", func(c *fiber.Ctx) error {
+		token := c.Get("Authorization")
+		if libs.ValidateSession(token) {
+			return c.JSON(fiber.Map{"valid": true})
+		}
+		return c.Status(401).JSON(fiber.Map{"valid": false})
+	})
+
 	// API route to start RPS test
 	app.Post("/api/start-test", func(c *fiber.Ctx) error {
 		type TestRequest struct {

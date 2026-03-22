@@ -1,7 +1,11 @@
 package libs
 
 import (
+	"crypto/rand"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
+	"fmt"
 	"log"
 	"time"
 
@@ -22,10 +26,23 @@ func InitDB(dbPath string) {
 	DB.SetMaxOpenConns(1)
 
 	createTables()
+	seedUser()
 }
 
 func createTables() {
 	queries := []string{
+		`CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL UNIQUE,
+			password_hash TEXT NOT NULL
+		)`,
+		`CREATE TABLE IF NOT EXISTS sessions (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			token TEXT NOT NULL UNIQUE,
+			user_id INTEGER NOT NULL,
+			created_at TEXT NOT NULL,
+			FOREIGN KEY (user_id) REFERENCES users(id)
+		)`,
 		`CREATE TABLE IF NOT EXISTS test_runs (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			domain TEXT NOT NULL,
@@ -176,4 +193,73 @@ func GetResultCount(runID int64) (int, error) {
 	var count int
 	err := DB.QueryRow(`SELECT COUNT(*) FROM test_results WHERE run_id = ?`, runID).Scan(&count)
 	return count, err
+}
+
+// hashPassword creates a SHA-256 hash of the password
+func hashPassword(password string) string {
+	h := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(h[:])
+}
+
+// seedUser creates the default user if it doesn't exist
+func seedUser() {
+	var count int
+	DB.QueryRow(`SELECT COUNT(*) FROM users WHERE username = ?`, "harmoniousmoss").Scan(&count)
+	if count == 0 {
+		hash := hashPassword("harmoniousmoss")
+		_, err := DB.Exec(`INSERT INTO users (username, password_hash) VALUES (?, ?)`, "harmoniousmoss", hash)
+		if err != nil {
+			log.Printf("Failed to seed user: %s", err)
+		}
+	}
+}
+
+// generateToken creates a random session token
+func generateToken() (string, error) {
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(b), nil
+}
+
+// Authenticate checks username/password and returns a session token
+func Authenticate(username, password string) (string, error) {
+	hash := hashPassword(password)
+	var userID int64
+	err := DB.QueryRow(`SELECT id FROM users WHERE username = ? AND password_hash = ?`, username, hash).Scan(&userID)
+	if err != nil {
+		return "", fmt.Errorf("invalid credentials")
+	}
+
+	token, err := generateToken()
+	if err != nil {
+		return "", err
+	}
+
+	_, err = DB.Exec(
+		`INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)`,
+		token, userID, time.Now().UTC().Format(time.RFC3339),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}
+
+// ValidateSession checks if a session token is valid
+func ValidateSession(token string) bool {
+	if token == "" {
+		return false
+	}
+	var id int64
+	err := DB.QueryRow(`SELECT id FROM sessions WHERE token = ?`, token).Scan(&id)
+	return err == nil
+}
+
+// DeleteSession removes a session token (logout)
+func DeleteSession(token string) error {
+	_, err := DB.Exec(`DELETE FROM sessions WHERE token = ?`, token)
+	return err
 }
