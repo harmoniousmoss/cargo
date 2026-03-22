@@ -1,0 +1,35 @@
+# Cargo Backend
+
+## Overview
+Go backend for Cargo, an HTTP load testing tool. Fires concurrent requests against target domains and records results.
+
+## Tech Stack
+- Go 1.22 with Fiber v2 (HTTP framework)
+- SQLite via go-sqlite3 (requires CGO_ENABLED=1)
+- Air for hot reload during development
+
+## Project Structure
+- `main.go` — Fiber app setup, API routes
+- `handlers/main_handler.go` — RPS test logic, concurrent HTTP requests
+- `libs/database.go` — SQLite schema, queries, CRUD operations
+- `libs/env_utils.go` — .env file loading
+- `urls.txt` — URL paths to test against
+- `.air.toml` — Air hot reload config
+
+## Running
+```bash
+# Requires .env file with DOMAIN=https://example.com/
+CGO_ENABLED=1 air
+```
+
+## API Endpoints
+- `GET /` — Health check
+- `POST /api/start-test` — Start a test (`{ domain, iterations }`)
+- `GET /api/results?since=N` — Poll current test results (incremental)
+- `GET /api/runs` — List all past test runs
+- `GET /api/runs/:id/results` — Get results for a specific past run
+
+## Notes
+- go-sqlite3 requires CGo — always build with `CGO_ENABLED=1`
+- Database file is `cargo.db` (gitignored)
+- The frontend connects via server-side proxy (SvelteKit API routes), not direct browser requests

@@ -39,3 +39,8 @@ ehthumbs.db
 Thumbs.db
 
 .env
+
+# Database
+*.db
+*.db-shm
+*.db-wal
